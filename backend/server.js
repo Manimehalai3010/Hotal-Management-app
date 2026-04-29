@@ -7,7 +7,9 @@ import bookingRoutes from "./routes/bookingRoutes.js";
 dotenv.config();
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: "https://hotel-management-with-responsive.vercel.app/"
+}));
 app.use(express.json());
 
 app.use("/api/bookings", bookingRoutes);

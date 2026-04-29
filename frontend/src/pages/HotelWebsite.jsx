@@ -155,6 +155,7 @@ const [loading, setLoading] = useState(false);
 
     if (res.ok) {
       setBookingMsg("✅ Booking successful!");
+      setTimeout(() => setBookingMsg(""), 4000);
 
       setName("");
       setEmail("");
@@ -167,8 +168,8 @@ const [loading, setLoading] = useState(false);
       setBookingMsg(result.error || "Something went wrong");
     }
   } catch (err) {
-    setBookingMsg("❌ Server not running");
-  } finally {
+  setBookingMsg("❌ Unable to connect to server. Please try again.");
+} finally {
     setLoading(false); // ✅ stop loading
   }
 };
@@ -198,8 +199,8 @@ const [loading, setLoading] = useState(false);
             ))}
             <button
   onClick={() => scrollTo("booking")}
-  className="jost text-xs tracking-[0.15em] uppercase px-5 py-3 border gold-border gold w-full mt-2
-  hover:bg-amber-500 hover:text-white transition-all duration-300"
+  className="jost text-xs tracking-[0.15em] uppercase px-5 py-2 border gold-border gold
+  hover:bg-white hover:text-black transition-all duration-300"
 >
   Reserve
 </button>
@@ -387,7 +388,7 @@ const [loading, setLoading] = useState(false);
             <p className="jost text-stone-400 text-center text-sm tracking-wide mb-16">Complete the form below and our team will reach out within two hours to confirm your reservation.</p>
           </FadeIn>
           <FadeIn delay={100}>
-            <form onSubmit={handleBook} className="bg-stone-900 border border-stone-800 p-6 sm: flex flex-col gap-6">
+            <form onSubmit={handleBook} className="bg-stone-900 border border-stone-800 p-6 flex flex-col gap-6">
               <div className="grid sm:grid-cols-2 gap-6">
                 <div>
                   <label className="jost text-[10px] tracking-[0.3em] uppercase text-stone-500 block mb-2">Check-In</label>
@@ -430,9 +431,12 @@ const [loading, setLoading] = useState(false);
               <button
   type="submit"
   disabled={loading}
-  className={`jost text-xs tracking-[0.25em] uppercase py-4 font-medium mt-2 transition-all duration-300
+  className={`jost text-xs tracking-[0.25em] uppercase py-4 font-medium mt-2 flex items-center justify-center gap-2 transition-all duration-300
   ${loading ? "bg-stone-700 cursor-not-allowed" : "gold-bg hover:bg-amber-400 text-stone-950"}`}
 >
+  {loading && (
+    <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+  )}
   {loading ? "Processing..." : "Request Reservation"}
 </button>
             </form>

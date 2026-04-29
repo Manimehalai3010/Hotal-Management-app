@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
 import bookingRoutes from "./routes/bookingRoutes.js";
+import paymentRoutes from './routes/paymentRoutes.js';
 
 dotenv.config();
 
@@ -22,6 +23,7 @@ app.get("/", (req, res) => {
 
 // ✅ Routes
 app.use("/api/bookings", bookingRoutes);
+app.use("/api/payment", paymentRoutes);
 
 const PORT = process.env.PORT || 5000;
 

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import toast from "react-hot-toast";
 
 const NAV_LINKS = ["Rooms", "Dining", "Spa", "Gallery", "Contact"];
 
@@ -122,11 +123,12 @@ const [loading, setLoading] = useState(false);
     setMenuOpen(false);
   }
 
+  //Booking
  const handleBook = async (e) => {
   e.preventDefault();
 
   if (!checkIn || !checkOut) {
-    setBookingMsg("Please select check-in and check-out dates.");
+    toast.error("Please select check-in and check-out dates.");
     return;
   }
 
@@ -154,7 +156,7 @@ const [loading, setLoading] = useState(false);
     const result = await res.json();
 
     if (res.ok) {
-      setBookingMsg("✅ Booking successful!");
+      toast.success("✅ Booking successful!");
       setTimeout(() => setBookingMsg(""), 4000);
 
       setName("");
@@ -165,12 +167,51 @@ const [loading, setLoading] = useState(false);
       setRoom(ROOMS[0].name);
       setMessage("");
     } else {
-      setBookingMsg(result.error || "Something went wrong");
+      toast.error(result.error || "Something went wrong");
     }
   } catch (err) {
-  setBookingMsg("❌ Unable to connect to server. Please try again.");
+  toast.error("❌ Unable to connect to server. Please try again.");
 } finally {
     setLoading(false); // ✅ stop loading
+  }
+};
+
+//Payment
+const handlePayment = async () => {
+  try {
+    const res = await fetch("https://hotel-management-with-responsive.onrender.com/api/payment/create-order", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ amount: 5000 }), // ₹5000
+    });
+
+    const order = await res.json();
+
+    const options = {
+      key: "YOUR_RAZORPAY_KEY_ID",
+      amount: order.amount,
+      currency: "INR",
+      name: "Majun Hotel",
+      description: "Room Booking",
+      order_id: order.id,
+      handler: function (response) {
+        toast.success("Payment Successful 🎉");
+      },
+      prefill: {
+        name,
+        email,
+      },
+      theme: {
+        color: "#c9a96e",
+      },
+    };
+
+    const rzp = new window.Razorpay(options);
+    rzp.open();
+  } catch (err) {
+    toast.error("Payment failed");
   }
 };
 
@@ -427,7 +468,6 @@ const [loading, setLoading] = useState(false);
                 <label className="jost text-[10px] tracking-[0.3em] uppercase text-stone-500 block mb-2">Special Requests</label>
                 <textarea rows={3} value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Dietary requirements, occasion, preferred floor..." className="jost w-full bg-stone-950 border border-stone-700 text-stone-200 px-4 py-3 text-sm placeholder-stone-700 focus:outline-none focus:border-amber-600 transition-colors resize-none" />
               </div>
-              {bookingMsg && <p className="jost text-sm gold text-center">{bookingMsg}</p>}
               <button
   type="submit"
   disabled={loading}
@@ -438,6 +478,13 @@ const [loading, setLoading] = useState(false);
     <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
   )}
   {loading ? "Processing..." : "Request Reservation"}
+</button>
+<button
+  type="button"
+  onClick={handlePayment}
+  className="jost text-xs tracking-[0.2em] uppercase border gold-border gold px-6 py-3 hover:bg-white hover:text-black transition-all duration-300"
+>
+  Pay Now
 </button>
             </form>
           </FadeIn>

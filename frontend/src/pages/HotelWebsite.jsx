@@ -198,40 +198,44 @@ useEffect(() => {
 
 //Payment
 const handlePayment = async () => {
+  setLoading(true);
+
   try {
     const res = await fetch("https://hotel-management-with-responsive.onrender.com/api/payment/create-order", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ amount: 5000 }), // ₹5000
+      body: JSON.stringify({ amount: 5000 }),
     });
 
     const order = await res.json();
 
+    // ✅ ADD HERE
+    if (!order.id) {
+      toast.error("Server waking up... try again");
+      return;
+    }
+
     const options = {
-      key: "YOUR_RAZORPAY_KEY_ID",
+      key: "rzp_test_xxxxxxxx",
       amount: order.amount,
       currency: "INR",
       name: "Majun Hotel",
-      description: "Room Booking",
       order_id: order.id,
-      handler: function (response) {
+      handler: function () {
         toast.success("Payment Successful 🎉");
       },
-      prefill: {
-        name,
-        email,
-      },
-      theme: {
-        color: "#c9a96e",
-      },
+      prefill: { name, email },
     };
 
     const rzp = new window.Razorpay(options);
     rzp.open();
+
   } catch (err) {
     toast.error("Payment failed");
+  } finally {
+    setLoading(false);
   }
 };
 
@@ -499,7 +503,14 @@ const handlePayment = async () => {
   )}
   {loading ? "Processing..." : "Request Reservation"}
 </button>
-<RazorpayButton name={name} email={email} />
+
+{!name || !email ? (
+  <p className="text-xs text-red-400 text-center mt-2">
+    Fill booking details first
+  </p>
+) : (
+  <RazorpayButton name={name} email={email} />
+)}
  
             </form>
           </FadeIn>

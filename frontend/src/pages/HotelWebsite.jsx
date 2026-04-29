@@ -143,7 +143,7 @@ const [loading, setLoading] = useState(false);
   };
 
   try {
-    const res = await fetch("https://hotel-management-with-responsive.onrender.com", {
+    const res = await fetch("https://hotel-management-with-responsive.onrender.com/api/bookings", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

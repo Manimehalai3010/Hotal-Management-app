@@ -109,6 +109,11 @@ export default function HotelWebsite() {
   const [checkOut, setCheckOut] = useState("");
   const [guests, setGuests] = useState("2 Guests");
   const [bookingMsg, setBookingMsg] = useState("");
+  const [name, setName] = useState("");
+const [email, setEmail] = useState("");
+const [room, setRoom] = useState(ROOMS[0].name);
+const [message, setMessage] = useState("");
+const [loading, setLoading] = useState(false);
 
   const navBg = scrollY > 80;
 
@@ -117,12 +122,56 @@ export default function HotelWebsite() {
     setMenuOpen(false);
   }
 
-  function handleBook(e) {
-    e.preventDefault();
-    if (!checkIn || !checkOut) { setBookingMsg("Please select check-in and check-out dates."); return; }
-    setBookingMsg(`Booking request sent for ${checkIn} → ${checkOut}, ${guests}. We'll confirm shortly!`);
-    setTimeout(() => setBookingMsg(""), 4000);
+ const handleBook = async (e) => {
+  e.preventDefault();
+
+  if (!checkIn || !checkOut) {
+    setBookingMsg("Please select check-in and check-out dates.");
+    return;
   }
+
+  setLoading(true); // ✅ start loading
+
+  const data = {
+    name,
+    email,
+    room,
+    checkIn,
+    checkOut,
+    guests,
+    message,
+  };
+
+  try {
+    const res = await fetch("http://localhost:5000/api/bookings", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    const result = await res.json();
+
+    if (res.ok) {
+      setBookingMsg("✅ Booking successful!");
+
+      setName("");
+      setEmail("");
+      setCheckIn("");
+      setCheckOut("");
+      setGuests("2 Guests");
+      setRoom(ROOMS[0].name);
+      setMessage("");
+    } else {
+      setBookingMsg(result.error || "Something went wrong");
+    }
+  } catch (err) {
+    setBookingMsg("❌ Server not running");
+  } finally {
+    setLoading(false); // ✅ stop loading
+  }
+};
 
   return (
     <div className="bg-stone-950 text-stone-100 font-sans overflow-x-hidden" style={{ fontFamily: "'Cormorant Garamond', 'Georgia', serif" }}>
@@ -147,7 +196,13 @@ export default function HotelWebsite() {
             {NAV_LINKS.map(l => (
               <button key={l} onClick={() => scrollTo(l.toLowerCase())} className="jost text-xs tracking-[0.2em] uppercase text-stone-400 hover:text-stone-100 transition-colors">{l}</button>
             ))}
-            <button onClick={() => scrollTo("booking")} className="jost text-xs tracking-[0.15em] uppercase px-5 py-2 border gold-border gold hover:gold-bg hover:text-stone-950 transition-all duration-300">Reserve</button>
+            <button
+  onClick={() => scrollTo("booking")}
+  className="jost text-xs tracking-[0.15em] uppercase px-5 py-3 border gold-border gold w-full mt-2
+  hover:bg-amber-500 hover:text-white transition-all duration-300"
+>
+  Reserve
+</button>
           </div>
           <button className="md:hidden text-stone-300" onClick={() => setMenuOpen(v => !v)}>
             <div className="space-y-1.5">{[0,1,2].map(i => <div key={i} className={`h-px w-6 gold-bg transition-all ${menuOpen && i===1 ? "opacity-0" : ""} ${menuOpen && i===0 ? "rotate-45 translate-y-2" : ""} ${menuOpen && i===2 ? "-rotate-45 -translate-y-2" : ""}`} />)}</div>
@@ -158,7 +213,13 @@ export default function HotelWebsite() {
             {NAV_LINKS.map(l => (
               <button key={l} onClick={() => scrollTo(l.toLowerCase())} className="jost text-sm tracking-[0.2em] uppercase text-stone-300 hover:text-stone-100 text-left">{l}</button>
             ))}
-            <button onClick={() => scrollTo("booking")} className="jost text-xs tracking-[0.15em] uppercase px-5 py-3 border gold-border gold w-full mt-2">Reserve</button>
+           <button
+  onClick={() => scrollTo("booking")}
+  className="jost text-xs tracking-[0.15em] uppercase px-5 py-2 border gold-border gold 
+  hover:bg-amber-500 hover:text-white transition-all duration-300"
+>
+  Reserve
+</button>
           </div>
         )}
       </nav>
@@ -340,7 +401,7 @@ export default function HotelWebsite() {
               <div className="grid sm:grid-cols-2 gap-6">
                 <div>
                   <label className="jost text-[10px] tracking-[0.3em] uppercase text-stone-500 block mb-2">Room Type</label>
-                  <select className="jost w-full bg-stone-950 border border-stone-700 text-stone-200 px-4 py-3 text-sm focus:outline-none focus:border-amber-600 transition-colors">
+                  <select value={room} onChange={(e) => setRoom(e.target.value)} className="jost w-full bg-stone-950 border border-stone-700 text-stone-200 px-4 py-3 text-sm focus:outline-none focus:border-amber-600 transition-colors">
                     {ROOMS.map(r => <option key={r.name}>{r.name}</option>)}
                   </select>
                 </div>
@@ -354,21 +415,26 @@ export default function HotelWebsite() {
               <div className="grid sm:grid-cols-2 gap-6">
                 <div>
                   <label className="jost text-[10px] tracking-[0.3em] uppercase text-stone-500 block mb-2">Full Name</label>
-                  <input type="text" placeholder="Your Name" required className="jost w-full bg-stone-950 border border-stone-700 text-stone-200 px-4 py-3 text-sm placeholder-stone-700 focus:outline-none focus:border-amber-600 transition-colors" />
+                  <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Your Name" required className="jost w-full bg-stone-950 border border-stone-700 text-stone-200 px-4 py-3 text-sm placeholder-stone-700 focus:outline-none focus:border-amber-600 transition-colors" />
                 </div>
                 <div>
                   <label className="jost text-[10px] tracking-[0.3em] uppercase text-stone-500 block mb-2">Email</label>
-                  <input type="email" placeholder="your@email.com" required className="jost w-full bg-stone-950 border border-stone-700 text-stone-200 px-4 py-3 text-sm placeholder-stone-700 focus:outline-none focus:border-amber-600 transition-colors" />
+                  <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="your@email.com" required className="jost w-full bg-stone-950 border border-stone-700 text-stone-200 px-4 py-3 text-sm placeholder-stone-700 focus:outline-none focus:border-amber-600 transition-colors" />
                 </div>
               </div>
               <div>
                 <label className="jost text-[10px] tracking-[0.3em] uppercase text-stone-500 block mb-2">Special Requests</label>
-                <textarea rows={3} placeholder="Dietary requirements, occasion, preferred floor..." className="jost w-full bg-stone-950 border border-stone-700 text-stone-200 px-4 py-3 text-sm placeholder-stone-700 focus:outline-none focus:border-amber-600 transition-colors resize-none" />
+                <textarea rows={3} value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Dietary requirements, occasion, preferred floor..." className="jost w-full bg-stone-950 border border-stone-700 text-stone-200 px-4 py-3 text-sm placeholder-stone-700 focus:outline-none focus:border-amber-600 transition-colors resize-none" />
               </div>
               {bookingMsg && <p className="jost text-sm gold text-center">{bookingMsg}</p>}
-              <button type="submit" className="jost text-xs tracking-[0.25em] uppercase gold-bg text-stone-950 py-4 font-medium hover:bg-amber-400 transition-all duration-300 mt-2">
-                Request Reservation
-              </button>
+              <button
+  type="submit"
+  disabled={loading}
+  className={`jost text-xs tracking-[0.25em] uppercase py-4 font-medium mt-2 transition-all duration-300
+  ${loading ? "bg-stone-700 cursor-not-allowed" : "gold-bg hover:bg-amber-400 text-stone-950"}`}
+>
+  {loading ? "Processing..." : "Request Reservation"}
+</button>
             </form>
           </FadeIn>
         </div>

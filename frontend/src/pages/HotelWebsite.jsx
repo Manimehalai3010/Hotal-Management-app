@@ -119,10 +119,29 @@ const [loading, setLoading] = useState(false);
 
   const navBg = scrollY > 80;
 
-  function scrollTo(id) {
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
-    setMenuOpen(false);
-  }
+ function scrollTo(id) {
+  const el = document.getElementById(id);
+  if (!el) return; // ✅ prevent crash
+
+  const offset = 80;
+  const y = el.getBoundingClientRect().top + window.pageYOffset - offset;
+
+  window.scrollTo({
+    top: y,
+    behavior: "smooth",
+  });
+
+  setMenuOpen(false);
+}
+
+useEffect(() => {
+  if (window.Razorpay) return;
+
+  const script = document.createElement("script");
+  script.src = "https://checkout.razorpay.com/v1/checkout.js";
+  script.async = true;
+  document.body.appendChild(script);
+}, []);
 
   //Booking
  const handleBook = async (e) => {
@@ -157,7 +176,7 @@ const [loading, setLoading] = useState(false);
     const result = await res.json();
 
     if (res.ok) {
-      toast.success("✅ Booking successful!");
+      toast.success("✅ Booking successful! Pay Now");
       setTimeout(() => setBookingMsg(""), 4000);
 
       setName("");
@@ -217,7 +236,7 @@ const handlePayment = async () => {
 };
 
   return (
-    <div className="bg-stone-950 text-stone-100 font-sans overflow-x-hidden" style={{ fontFamily: "'Cormorant Garamond', 'Georgia', serif" }}>
+    <div className="bg-stone-950 text-stone-100 font-sans" style={{ fontFamily: "'Cormorant Garamond', 'Georgia', serif" }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap');
         .jost { font-family: 'Jost', sans-serif; }
@@ -268,7 +287,7 @@ const handlePayment = async () => {
       </nav>
 
       {/* HERO */}
-      <section id="home" className="relative h-screen flex items-center justify-center overflow-hidden">
+      <section id="home" className="relative min-h-screen flex items-center justify-center">
         <div className="absolute inset-0">
           <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1800&q=85" alt="Majun Hotel" className="w-full h-full object-cover" style={{ transform: `translateY(${scrollY * 0.3}px)` }} />
           <div className="absolute inset-0 bg-gradient-to-b from-stone-950/60 via-stone-950/30 to-stone-950/80" />

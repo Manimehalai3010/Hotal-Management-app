@@ -7,17 +7,28 @@ import bookingRoutes from "./routes/bookingRoutes.js";
 dotenv.config();
 
 const app = express();
+
+// ✅ CORS FIX
 app.use(cors({
-  origin: "https://hotel-management-with-responsive.vercel.app/"
+  origin: "https://hotel-management-with-responsive.vercel.app"
 }));
+
 app.use(express.json());
 
+// ✅ Test route
+app.get("/", (req, res) => {
+  res.send("API is running 🚀");
+});
+
+// ✅ Routes
 app.use("/api/bookings", bookingRoutes);
 
 const PORT = process.env.PORT || 5000;
 
+// ✅ MongoDB connection
 mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log("MongoDB Connected"))
-  .catch(err => console.log(err));
+  .then(() => console.log("✅ MongoDB Connected"))
+  .catch(err => console.log("❌ Mongo Error:", err));
 
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// ✅ Start server
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

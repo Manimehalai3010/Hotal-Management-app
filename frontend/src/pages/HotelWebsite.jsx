@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import toast from "react-hot-toast";
+import RazorpayButton from "./RazorpayButton";
 
 const NAV_LINKS = ["Rooms", "Dining", "Spa", "Gallery", "Contact"];
 
@@ -479,13 +480,8 @@ const handlePayment = async () => {
   )}
   {loading ? "Processing..." : "Request Reservation"}
 </button>
-<button
-  type="button"
-  onClick={handlePayment}
-  className="jost text-xs tracking-[0.2em] uppercase border gold-border gold px-6 py-3 hover:bg-white hover:text-black transition-all duration-300"
->
-  Pay Now
-</button>
+<RazorpayButton name={name} email={email} />
+ 
             </form>
           </FadeIn>
         </div>

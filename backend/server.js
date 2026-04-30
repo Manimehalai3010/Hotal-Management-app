@@ -11,7 +11,7 @@ const app = express();
 
 // ✅ CORS FIX
 app.use(cors({
-  origin: "https://hotel-management-with-responsive.vercel.app"
+  origin: "https://hotal-management-app.vercel.app/"
 }));
 
 app.use(express.json());

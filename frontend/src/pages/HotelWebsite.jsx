@@ -167,7 +167,7 @@ useEffect(() => {
   };
 
   try {
-    const res = await fetch("https://hotel-management-with-responsive.onrender.com/api/bookings", {
+    const res = await fetch("https://hotal-management-app.onrender.com/api/bookings", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

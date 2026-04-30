@@ -53,7 +53,7 @@ export default function RazorpayButton({ name, email, room, checkIn, checkOut })
     try {
       // 1. Create order on your backend
       const res = await fetch(
-        "https://hotel-management-with-responsive.onrender.com/api/payment/create-order",
+        "https://hotal-management-app.onrender.com/api/payment/create-order",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

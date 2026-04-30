@@ -509,7 +509,7 @@ const handlePayment = async () => {
     Fill booking details first
   </p>
 ) : (
-  <RazorpayButton name={name} email={email} />
+ <RazorpayButton name={name} email={email} room={room} checkIn={checkIn} checkOut={checkOut} />
 )}
  
             </form>

@@ -207,7 +207,7 @@ const handlePayment = async () => {
   setLoading(true);
 
   try {
-    const res = await fetch("https://hotel-management-with-responsive.onrender.com/api/payment/create-order", {
+    const res = await fetch("https://hotal-management-app.onrender.com/api/payment/create-order", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -504,13 +504,8 @@ const handlePayment = async () => {
   {loading ? "Processing..." : "Request Reservation"}
 </button>
 
-{!name || !email ? (
-  <p className="text-xs text-red-400 text-center mt-2">
-    Fill booking details first
-  </p>
-) : (
+
  <RazorpayButton name={name} email={email} room={room} checkIn={checkIn} checkOut={checkOut} />
-)}
  
             </form>
           </FadeIn>

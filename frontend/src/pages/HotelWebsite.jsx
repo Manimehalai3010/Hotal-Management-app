@@ -116,6 +116,8 @@ const [email, setEmail] = useState("");
 const [room, setRoom] = useState(ROOMS[0].name);
 const [message, setMessage] = useState("");
 const [loading, setLoading] = useState(false);
+const [bookingConfirmed, setBookingConfirmed] = useState(false);
+const [bookedData, setBookedData] = useState(null); // ← saves booking info for payment
 
   const navBg = scrollY > 80;
 
@@ -176,17 +178,21 @@ useEffect(() => {
     const result = await res.json();
 
     if (res.ok) {
-      toast.success("✅ Booking successful! Pay Now");
-      setTimeout(() => setBookingMsg(""), 4000);
+  toast.success("✅ Booking confirmed! Complete your payment below.");
+  
+  // ✅ Save booking data for Razorpay BEFORE resetting form
+  setBookedData({ name, email, room, checkIn, checkOut });
+  setBookingConfirmed(true);
 
-      setName("");
-      setEmail("");
-      setCheckIn("");
-      setCheckOut("");
-      setGuests("2 Guests");
-      setRoom(ROOMS[0].name);
-      setMessage("");
-    } else {
+  // Reset form
+  setName("");
+  setEmail("");
+  setCheckIn("");
+  setCheckOut("");
+  setGuests("2 Guests");
+  setRoom(ROOMS[0].name);
+  setMessage("");
+} else {
       toast.error(result.error || "Something went wrong");
     }
   } catch (err) {
@@ -505,7 +511,25 @@ const handlePayment = async () => {
 </button>
 
 
- <RazorpayButton name={name} email={email} room={room} checkIn={checkIn} checkOut={checkOut} />
+  {/* Show pay button ONLY after booking confirmed */}
+{bookingConfirmed && bookedData ? (
+  <div className="border border-amber-800 bg-stone-950 p-4 flex flex-col gap-3">
+    <p className="jost text-xs text-amber-500 tracking-widest text-center uppercase">
+      ✅ Booking confirmed — complete your payment
+    </p>
+    <RazorpayButton
+      name={bookedData.name}
+      email={bookedData.email}
+      room={bookedData.room}
+      checkIn={bookedData.checkIn}
+      checkOut={bookedData.checkOut}
+    />
+  </div>
+) : (
+  <p className="jost text-xs text-stone-600 text-center tracking-widest">
+    Submit your reservation first to proceed to payment.
+  </p>
+)}
  
             </form>
           </FadeIn>

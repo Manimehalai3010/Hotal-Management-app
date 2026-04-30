@@ -76,7 +76,7 @@ export default function RazorpayButton({ name, email, room, checkIn, checkOut })
 
       // 2. Open Razorpay checkout
       const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID, // ✅ use env variable
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID, //  use env variable
         amount: order.amount,
         currency: order.currency || "INR",
         name: "Majun Hotel & Spa",

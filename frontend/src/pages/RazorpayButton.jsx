@@ -88,7 +88,7 @@ export default function RazorpayButton({ name, email, room, checkIn, checkOut })
           // 3. Verify payment on backend (IMPORTANT for security)
           try {
             const verifyRes = await fetch(
-              "https://hotel-management-with-responsive.onrender.com/api/payment/verify",
+              "https://hotal-management-app.onrender.com/api/payment/verify",
               {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
